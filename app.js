@@ -1,25 +1,58 @@
-const axios = require("axios");
+const express = require('express');
+const dotenv = require('dotenv');
+const axios = require('axios');
 
-const cloudUrl = "https://shelly-134-eu.shelly.cloud/device/light?id=485519fc0490&auth_key=MmEzNGZjdWlkB44B0B5F51CF40CDED3791BA8AB79868B14C101A69D69AB2634CE690186894BF5C6A428AD55D9CD5"; // Replace with your actual cloud URL
-// const authToken = "MmEzNGZjWlkB44B0B5F51CF40CDED3791BA8AB79868B14C101A69D69AB2634CE690186894BF5C6A428AD55D9CD5"; // Replace with your actual auth_key
-// const deviceId = "485519fc0490"; // Replace with your actual device_id
+const app = express();
+app.use(express.json());
 
-const controlBulb = async (state) => {
+dotenv.config();
+
+const base_url = `http://${process.env.SHELLY_DEVICE_IP}/light/0`;
+
+const hexToRgbw = (hex) => {
+  // separate hex color to RGB values
+  const bigint = parseInt(hex.slice(1), 16);
+  const red = (bigint >> 16) & 255;
+  const green = (bigint >> 8) & 255;
+  const blue = bigint & 255;
+  console.log({ red, green, blue });
+  return { red, green, blue };
+};
+
+const controlBulb = async (
+  state,
+  rgbw = { red: 0, green: 0, blue: 0 }
+) => {
   try {
-    const response = await axios.post(
-      cloudUrl,
-      {
-        ""
+    const response = await axios.get(`${base_url}/set`, {
+      params: {
+        turn: state,
+        red: rgbw.red,
+        green: rgbw.green,
+        blue: rgbw.blue,
       },
-    );
-    console.log("Bulb control response:", response.data);
+    });
+    return response.data;
   } catch (error) {
-    console.error("Error controlling bulb:", error.response?.data || error.message);
+    console.error('Error controlling bulb:', error.message);
+    throw error;
   }
 };
 
-// // Turn the bulb ON
-// controlBulb("on");
+app.post('/control-bulb', (req, res) => {
+  const { color } = req.body;
 
-// Turn the bulb OFF
-controlBulb("off");
+  if (color && color.startsWith('#') && color.length === 7) {
+    const rgbw = hexToRgbw(color);
+    controlBulb('on', rgbw)
+      .then(() => res.status(200).send('Bulb updated'))
+      .catch((err) => res.status(500).send(err.message));
+  } else {
+    res.status(400).send('Invalid color format');
+  }
+});
+
+const PORT = process.env.PORT || 3333;
+app.listen(PORT, () =>
+  console.log(`Bulb control server running on port ${PORT}`)
+);
