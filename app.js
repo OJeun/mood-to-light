@@ -1,31 +1,23 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const axios = require('axios');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 dotenv.config();
 
 const base_url = `http://${process.env.SHELLY_DEVICE_IP}/light/0`;
+// const base_url = 'https://shelly-134-eu.shelly.cloud/device/relay/control';
 
-const hexToRgbw = (hex) => {
-  // separate hex color to RGB values
-  const bigint = parseInt(hex.slice(1), 16);
-  const red = (bigint >> 16) & 255;
-  const green = (bigint >> 8) & 255;
-  const blue = bigint & 255;
-  console.log({ red, green, blue });
-  return { red, green, blue };
-};
-
-const controlBulb = async (
-  state,
-  rgbw = { red: 0, green: 0, blue: 0 }
-) => {
+const controlBulb = async (state, rgbw = { red: 0, green: 0, blue: 0 }) => {
   try {
-    const response = await axios.get(`${base_url}/set`, {
+    const response = await axios.get(`${base_url}/`, {
       params: {
+        // id: process.env.SHELLY_DEVICE_ID,
+        // auth_key: process.env.SHELLY_AUTH_TOKEN,
         turn: state,
         red: rgbw.red,
         green: rgbw.green,
@@ -41,15 +33,11 @@ const controlBulb = async (
 
 app.post('/control-bulb', (req, res) => {
   const { color } = req.body;
+  console.log("change bulb color to :", color);
 
-  if (color && color.startsWith('#') && color.length === 7) {
-    const rgbw = hexToRgbw(color);
-    controlBulb('on', rgbw)
-      .then(() => res.status(200).send('Bulb updated'))
-      .catch((err) => res.status(500).send(err.message));
-  } else {
-    res.status(400).send('Invalid color format');
-  }
+  controlBulb('on', color)
+    .then(() => res.status(200).send('Bulb updated'))
+    .catch((err) => res.status(500).send(err.message));
 });
 
 const PORT = process.env.PORT || 3333;
