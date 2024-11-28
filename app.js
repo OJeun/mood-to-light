@@ -7,10 +7,13 @@ const app = express();
 app.use(express.json());
 
 app.use(
-    cors({
-        origin: ['http://localhost:3000', 'https://4537project-s2p-2-hackc2gjbxgzhpcn.canadacentral-01.azurewebsites.net'],
-        methods: ['GET', 'POST', 'OPTIONS']
-    })
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'https://4537client-d7h3f7dmhrg4cufv.canadacentral-01.azurewebsites.net/',
+    ],
+    methods: ['GET', 'POST', 'OPTIONS'],
+  })
 );
 
 dotenv.config();
