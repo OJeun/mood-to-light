@@ -8,7 +8,7 @@ app.use(express.json());
 
 app.use(
     cors({
-        origin: 'http://localhost:3000', 
+        origin: ['http://localhost:3000', 'https://4537project-s2p-2-hackc2gjbxgzhpcn.canadacentral-01.azurewebsites.net'],
         methods: ['GET', 'POST', 'OPTIONS']
     })
 );
