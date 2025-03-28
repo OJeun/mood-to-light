@@ -6,7 +6,7 @@ Emotion Detection (AI Integration)
 
 A deployed facial analysis API receives a user’s image and returns their detected emotion (e.g., happy, sad, angry).
 
-The image is sent via a POST request to the AI server (hosted externally or on Azure/GCP).
+The image is sent via a POST request to the AI server (hosted externally or on Azure/GCP). <br>
 
 Response: { emotion: "sad" }, for example.
 
@@ -22,7 +22,6 @@ For instance:
 
 😠 angry → Red
 
-The Shelly device is authenticated using your device ID and auth key, stored securely in .env.
 ```
 {
   "color": { "red": 0, "green": 0, "blue": 255 }
@@ -40,7 +39,7 @@ Response:
   ...
 }
 ```
-
+The Shelly device is authenticated using your device ID and auth key, stored securely in .env.
 🛠 .env Example
 ```
 PORT=3333
