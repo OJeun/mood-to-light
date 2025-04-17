@@ -6,7 +6,7 @@ Emotion Detection (AI Integration)
 
 A deployed facial analysis API receives a user’s image and returns their detected emotion (e.g., happy, sad, angry).
 
-The image is sent via a POST request to the AI server (hosted externally or on Azure/GCP). <br>
+The image is sent via a POST request to the AI server hosted on Azure. <br>
 
 Response: { emotion: "sad" }, for example.
 
